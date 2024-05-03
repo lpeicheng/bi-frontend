@@ -1,5 +1,5 @@
 import { Footer } from '@/components';
-import {listChartUsingPost, listMyChartByPageUsingPost} from '@/services/bi/chartController';
+import { listMyChartByPageUsingPost} from '@/services/bi/chartController';
 import {
   LockOutlined,
   UserOutlined,
