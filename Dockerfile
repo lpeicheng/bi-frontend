@@ -1,6 +1,6 @@
 FROM nginx
 
-WORKDIR /usr/share/nginx/html/
+WORKDIR /www/server/panel/vhost/nginx/html
 USER root
 
 COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
