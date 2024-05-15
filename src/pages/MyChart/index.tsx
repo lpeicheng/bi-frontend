@@ -1,4 +1,4 @@
-import {Avatar, Card, List, message} from 'antd';
+import {Avatar, Card, List, message, Result} from 'antd';
 import ReactECharts from 'echarts-for-react';
 import React, { useEffect, useState } from 'react';
 import Search from "antd/es/input/Search";
@@ -14,6 +14,10 @@ const MyChartPage: React.FC = () => {
     current: 1,
     // 每页展示4条数据
     pageSize: 4,
+    //按时间顺序排序
+    sortField: 'createTime',
+    // 降序排序
+    sortOrder: 'desc',
   };
 
   const [searchParams, setSearchParams] = useState<API.ChartQueryRequest>({ ...initSearchParams });
@@ -36,12 +40,15 @@ const MyChartPage: React.FC = () => {
         // 有些图表有标题,有些没有,直接把标题全部去掉
         if (res.data.records) {
           res.data.records.forEach(data => {
-            // 要把后端返回的图表字符串改为对象数组,如果后端返回空字符串，就返回'{}'
-            const chartOption = JSON.parse(data.genChart ?? '{}');
-            // 把标题设为undefined
-            chartOption.title = undefined;
-            // 然后把修改后的数据转换为json设置回去
-            data.genChart = JSON.stringify(chartOption);
+            //生成成功时才展示数据
+            if(data.status==='succeed') {
+              // 要把后端返回的图表字符串改为对象数组,如果后端返回空字符串，就返回'{}'
+              const chartOption = JSON.parse(data.genChart ?? '{}');
+              // 把标题设为undefined
+              chartOption.title = undefined;
+              // 然后把修改后的数据转换为json设置回去
+              data.genChart = JSON.stringify(chartOption);
+            }
           })
         }
       } else {
@@ -126,16 +133,50 @@ const MyChartPage: React.FC = () => {
                 title={item.name}
                 description={item.chartType ? '图表类型：' + item.chartType : undefined}
               />
-              {/* 在元素的下方增加16像素的外边距 */}
-              <div style={{ marginBottom: 16 }} />
-              <p>{'分析目标：' + item.goal}</p>
-              {/* 在元素的下方增加16像素的外边距 */}
-              <div style={{ marginBottom: 16 }} />
-              <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
+
+              <>
+                {
+                  item.status==='wait' && <>
+                    <Result
+                      status="warning"
+                      title="待生成"
+                      subTitle={item.execMessage??'当前图表生成队列中，请稍后...'}
+                    />
+                  </>
+                }
+                {
+                  item.status==='running' && <>
+                    <Result
+                      status="info"
+                      title="图表生成中"
+                      subTitle={item.execMessage}
+                    />
+                  </>
+                }
+                {
+                  item.status==='succeed' && <>
+                  {/* 在元素的下方增加16像素的外边距 */}
+                    <div style={{marginBottom: 16}}/>
+                    <p>{'分析目标：' + item.goal}</p>
+                    {/* 在元素的下方增加16像素的外边距 */}
+                    <div style={{marginBottom: 16}}/>
+                    <ReactECharts option={item.genChart && JSON.parse(item.genChart)}/>
+                  </>
+                }
+                {
+                  item.status==='failed' && <>
+                    <Result
+                      status="error"
+                      title="图表生成失败"
+                      subTitle={item.execMessage}
+                    />
+                  </>
+                }
+              </>
             </Card>
           </List.Item>
-        )}
-      />
+          )}
+        />
     </div>
   );
 };
