@@ -1,11 +1,11 @@
 FROM nginx
 
-WORKDIR /www/server/panel/vhost/nginx/
+WORKDIR /www/wwwroot/
 USER root
 
 COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY ./dist  /www/server/panel/vhost/nginx/
+COPY ./dist  /www/wwwroot/
 
 EXPOSE 80
 
