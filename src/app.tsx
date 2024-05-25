@@ -5,14 +5,17 @@ import type { RunTimeLayoutConfig } from '@umijs/max';
 import { Link, history } from '@umijs/max';
 import { errorConfig } from './requestConfig';
 import {getLoginUserUsingGet} from "@/services/bi/userController";
+import {useEffect} from "react";
+import {notification} from "antd";
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
+let currentUser: API.LoginUserVO | undefined;
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
-  currentUser?: API.CurrentUser;
+  currentUser?: API.LoginUserVO;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -36,6 +39,57 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+  // 初始化 WebSocket 连接
+  useEffect(() => {
+    if (currentUser) {
+      const userId = currentUser?.id
+      // const newSocket = new WebSocket('ws://localhost:8080/api/websocket/' + userId);
+      const newSocket = new WebSocket('ws://47.109.191.16:8080/api/websocket/' + userId);
+      newSocket.onopen = () => {
+        console.log('WebSocket已连接');
+      };
+      newSocket.onmessage = (event) => {
+        if (event.data === '图表生成好啦，快去看看吧！') {
+          notification.success({
+            message: event.data,
+            duration: 2,
+          });
+          // 获取当前路径
+          const currentPath = history.location.pathname;
+          if (currentPath === '/mychart') {
+            // 刷新当前路径
+            window.location.reload();
+          }
+        } else {
+          notification.error({
+            message: event.data, // 根据实际情况设置错误消息
+            duration: 2,
+          });
+        }
+      };
+      newSocket.onclose = (event) => {
+        console.log('WebSocket已关闭：', event);
+        // 可以根据需要重新连接或处理关闭
+      };
+
+      // 将新的 socket 设置到 initialState 中
+      setInitialState((preInitialState) => ({
+        ...preInitialState,
+        socket: newSocket,
+      }));
+
+      // 当组件卸载时清理 WebSocket 连接
+      return () => {
+        if (
+          newSocket.readyState === WebSocket.OPEN ||
+          newSocket.readyState === WebSocket.CONNECTING
+        ) {
+          newSocket.close();
+        }
+      };
+    }
+  }, []);
+
   return {
     actionsRender: () => [<Question key="doc" />],
     avatarProps: {
@@ -46,7 +100,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       },
     },
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.userName,
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
@@ -119,7 +173,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  baseURL: 'http://106.52.221.21:8101/api',
+  baseURL: 'http://localhost:8101/',
   withCredentials:true,
   ...errorConfig,
 };

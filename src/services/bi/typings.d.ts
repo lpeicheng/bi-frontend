@@ -22,6 +22,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseInt_ = {
+    code?: number;
+    data?: number;
+    message?: string;
+  };
+
   type BaseResponseLoginUserVO_ = {
     code?: number;
     data?: LoginUserVO;
@@ -49,6 +55,12 @@ declare namespace API {
   type BaseResponsePageUserVO_ = {
     code?: number;
     data?: PageUserVO_;
+    message?: string;
+  };
+
+  type BaseResponseString_ = {
+    code?: number;
+    data?: string;
     message?: string;
   };
 
@@ -147,7 +159,7 @@ declare namespace API {
     id?: number;
   };
 
-  type getUserByIdUsingGETParams = {
+  type getUserByIdUsingGET1Params = {
     /** id */
     id?: number;
   };
@@ -211,7 +223,13 @@ declare namespace API {
     total?: number;
   };
 
+  type reloadChartByAiUsingPOSTParams = {
+    /** chartId */
+    chartId?: number;
+  };
+
   type User = {
+    checkPassword?: string;
     createTime?: string;
     id?: number;
     isDelete?: number;
@@ -220,6 +238,7 @@ declare namespace API {
     userAvatar?: string;
     userName?: string;
     userPassword?: string;
+    userProfile?: string;
     userRole?: string;
   };
 

@@ -51,10 +51,14 @@ const Register: React.FC = () => {
   const { styles } = useStyles();
   // 表单提交
   const handleSubmit = async (values: API.UserRegisterRequest) => {
-    const {userPassword, checkPassword} = values;
+    const {userPassword, checkPassword,userAccount} = values;
     // 校验
     if (userPassword !== checkPassword) {
       message.error('两次输入的密码不一致');
+      return;
+    }
+    if (userAccount?.length < 5) {
+      message.error('用户名长度不能小于4');
       return;
     }
 

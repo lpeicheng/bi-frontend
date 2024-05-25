@@ -174,6 +174,21 @@ export async function listMyChartByPageUsingPost(
   });
 }
 
+/** reloadChartByAi POST /api/chart/reload/gen */
+export async function reloadChartByAiUsingPost(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.reloadChartByAiUsingPOSTParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBiResponse_>('/api/chart/reload/gen', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** updateChart POST /api/chart/update */
 export async function updateChartUsingPost(
   body: API.ChartUpdateRequest,

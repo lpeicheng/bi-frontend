@@ -79,8 +79,9 @@ const Login: React.FC = () => {
       // 登录
       const res = await userLoginUsingPost(values);
       if (res.code===0) {
-        const defaultLoginSuccessMessage = '登录成功！';
-        message.success(defaultLoginSuccessMessage);
+        const defaultLoginSuccessMessage = '登录成功,';
+        message.success(defaultLoginSuccessMessage+"请到我的信息页面完善信息");
+
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
         history.push(urlParams.get('redirect') || '/');
