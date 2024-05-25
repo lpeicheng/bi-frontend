@@ -62,6 +62,11 @@ const Register: React.FC = () => {
       return;
     }
 
+    if (userPassword?.length < 8||checkPassword?.length < 8) {
+      message.error('密码和验证码长度不能小于8');
+      return;
+    }
+
     try {
       // 注册
       const id = await userRegisterUsingPost(values);
