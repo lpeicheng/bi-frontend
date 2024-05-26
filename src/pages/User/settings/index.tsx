@@ -3,6 +3,7 @@ import { Menu } from 'antd';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import BaseView from "@/pages/User/settings/components/base";
 import useStyles from "@/pages/User/settings/style.style";
+import SecurityView from "@/pages/User/settings/components/security";
 
 type SettingsStateKeys = 'base' | 'security' | 'binding' | 'notification';
 type SettingsState = {
@@ -13,6 +14,7 @@ const Settings: React.FC = () => {
   const { styles } = useStyles();
   const menuMap: Record<string, React.ReactNode> = {
     base: '基本设置',
+    security: '安全设置',
   };
   const [initConfig, setInitConfig] = useState<SettingsState>({
     mode: 'inline',
@@ -55,6 +57,8 @@ const Settings: React.FC = () => {
     switch (selectKey) {
       case 'base':
         return <BaseView />;
+      case 'security':
+        return <SecurityView />;
       default:
         return null;
     }

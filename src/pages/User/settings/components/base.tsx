@@ -1,11 +1,10 @@
-import { UploadOutlined } from '@ant-design/icons';
 import {
   ProForm,
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { useRequest } from '@umijs/max';
-import { Button, Form, message, Upload } from 'antd';
+import {  Form, message, Upload } from 'antd';
 import React from 'react';
 import {getLoginUserUsingGet, updateMyUserUsingPost} from "@/services/bi/userController";
 import useStyles from "@/pages/User/settings/components/index.style";
@@ -14,6 +13,7 @@ import useStyles from "@/pages/User/settings/components/index.style";
 const BaseView: React.FC = () => {
   const { styles } = useStyles();
   const [form] = Form.useForm();
+
 
   // 该函数会在上传前执行，会把file对象传过来，可以对上传的文件类型判断，限制大小等
   const beforeUpload = (file: any) => {
@@ -48,28 +48,25 @@ const BaseView: React.FC = () => {
       </div>
       <Upload name='file'
         showUploadList={false}
-        action='/api/user/update/myAvatar'
+        action='http://localhost:8101/api/user/update/myAvatar'
         beforeUpload={beforeUpload}
         onChange={handleChange}
       >
-        <div className={styles.button_view}>
-          <Button>
-            <UploadOutlined />
-            更换头像
-          </Button>
-        </div>
       </Upload>
     </>
   );
+
   const { data: userData, loading } = useRequest(() => {
     return getLoginUserUsingGet();
   });
+
   const getAvatarURL = () => {
     if (userData) {
       if (userData.userAvatar) {
         return userData.userAvatar;
       }
     }
+
     return '';
   };
   const handleFinish = async () => {
@@ -77,6 +74,7 @@ const BaseView: React.FC = () => {
       userName: form.getFieldValue('userName'),
       userProfile: form.getFieldValue('userProfile'),
       userAvatar: form.getFieldValue('userAvatar'),
+      userEmail: form.getFieldValue('userEmail'),
     };
     const updateUserInfo = await updateMyUserUsingPost(updatedUserInfo);
     if (updateUserInfo.data) {
@@ -118,6 +116,11 @@ const BaseView: React.FC = () => {
                 name="userAvatar"
                 label="用户图像"
                 placeholder="输入你的图片链接"
+              />
+              <ProFormText
+                name="userEmail"
+                label="用户邮箱"
+                placeholder="输入你的邮箱"
               />
             </ProForm>
           </div>

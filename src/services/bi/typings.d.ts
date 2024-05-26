@@ -174,6 +174,7 @@ declare namespace API {
     id?: number;
     updateTime?: string;
     userAvatar?: string;
+    userEmail?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
@@ -236,6 +237,7 @@ declare namespace API {
     updateTime?: string;
     userAccount?: string;
     userAvatar?: string;
+    userEmail?: string;
     userName?: string;
     userPassword?: string;
     userProfile?: string;
@@ -247,6 +249,17 @@ declare namespace API {
     userAvatar?: string;
     userName?: string;
     userRole?: string;
+  };
+
+  type UserCaptchaRequest = {
+    userEmail?: string;
+  };
+
+  type UserForgetRequest = {
+    captcha?: string;
+    checkPassword?: string;
+    userEmail?: string;
+    userPassword?: string;
   };
 
   type UserLoginRequest = {
@@ -273,6 +286,7 @@ declare namespace API {
 
   type UserUpdateMyRequest = {
     userAvatar?: string;
+    userEmail?: string;
     userName?: string;
     userProfile?: string;
   };
@@ -289,6 +303,7 @@ declare namespace API {
     createTime?: string;
     id?: number;
     userAvatar?: string;
+    userEmail?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
