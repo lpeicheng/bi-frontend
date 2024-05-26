@@ -48,7 +48,7 @@ const BaseView: React.FC = () => {
       </div>
       <Upload name='file'
         showUploadList={false}
-        action='http://localhost:8101/api/user/update/myAvatar'
+        action='http://106.52.221.21:8101/api/user/update/myAvatar'
         beforeUpload={beforeUpload}
         onChange={handleChange}
       >

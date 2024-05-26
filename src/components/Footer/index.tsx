@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
       links={[
         {
           key: 'paopao智能BI',
-          title: 'paopao智能BI',
+          title: '泡泡智能BI',
           href: 'https://pro.ant.design',
           blankTarget: true,
         },
@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
         },
         {
           key: 'paopao智能BI',
-          title: 'paopao智能BI',
+          title: '泡泡智能BI',
           href: 'https://ant.design',
           blankTarget: true,
         },

@@ -72,7 +72,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'paopao智能BI',
+  title: '泡泡智能BI',
   layout: {
     locale: true,
     ...defaultSettings,

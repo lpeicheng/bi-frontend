@@ -1,9 +1,12 @@
-import {Avatar, Card, List, message, Result} from 'antd';
+import {Avatar, Card, List, MenuProps, message, Modal, Result, Space, Typography} from 'antd';
 import ReactECharts from 'echarts-for-react';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Search from "antd/es/input/Search";
 import {useModel} from "@@/exports";
-import {listMyChartByPageUsingPost} from "@/services/bi/chartController";
+import {deleteChartUsingPost, listMyChartByPageUsingPost} from "@/services/bi/chartController";
+import {DeleteOutlined, DownloadOutlined, ExclamationCircleFilled, EyeOutlined} from "@ant-design/icons";
+import {ActionType} from "@ant-design/pro-table";
+
 /**
  * 我的图表页面
  * @constructor
@@ -28,6 +31,11 @@ const MyChartPage: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   // 加载状态，用来控制页面是否加载，默认正在加载
   const [loading, setLoading] = useState<boolean>(true);
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  const [disableOption, setDisableOption] = useState<boolean>(false);
+  const [chartId, setChartId] = useState<number>(0);
+  const actionRef = useRef<ActionType>();
+
 
   const loadData = async () => {
     // 获取数据中,还在加载中,把loading设置为true
@@ -61,9 +69,117 @@ const MyChartPage: React.FC = () => {
     setLoading(false);
   };
 
+  const chartRefs = useRef({}); // 使用 useRef 来存储图表的 ref
+
+  const downloadChart = (chartId: number) => {
+    const chartRef = chartRefs.current[chartId];
+    if (chartRef) {
+      const instance = chartRef.getEchartsInstance();
+      const imgData = instance.getDataURL({
+        pixelRatio: 2, // 提高图片清晰度
+        backgroundColor: '#fff' // 设置背景颜色
+      });
+      downloadImage(imgData);
+    }
+  };
+
+  const downloadImage = (dataUrl: string) => {
+    const timestamp = Math.floor(Date.now() / 1000); // 获取当前时间的秒数时间戳
+    const filename = `chart-${timestamp}.png`; // 使用时间戳作为文件名
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename; // 设置下载文件名
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   useEffect(() => {
     loadData();
   }, [searchParams]);
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <Space
+          onClick={() => {
+            setUpdateModalVisible(true);
+          }}
+        >
+          <EyeOutlined />
+          <Typography.Link>编辑</Typography.Link>
+        </Space>
+      ),
+      disabled: disableOption,
+    },
+    {
+      key: '2',
+      label: (
+        <Space
+          onClick={() => {
+            downloadChart(chartId);
+          }}
+        >
+          <DownloadOutlined />
+          <Typography.Link>下载</Typography.Link>
+        </Space>
+      ),
+    },
+    {
+      key: '3',
+      danger: true,
+      onClick: () => {
+        Modal.confirm({
+          title: '删除对话',
+          icon: <ExclamationCircleFilled />,
+          okType: 'danger',
+          content: '确认要删除该图表吗？',
+          okText: '确认',
+          cancelText: '取消',
+          onOk() {
+            handleDelete(chartId);
+          },
+        });
+      },
+      label: (
+        <Space>
+          <DeleteOutlined />
+          <div>删除</div>
+        </Space>
+      ),
+    },
+  ];
+
+  /**
+   * 删除图表数据
+   * @param params
+   */
+  const handleDelete = async (params: number) => {
+    if (params <= 0 || params === undefined) {
+      message.error('图表id为空');
+      return;
+    }
+    const data = {
+      id: params,
+    };
+    try {
+      const res = await deleteChartUsingPost(data);
+      if (res.code === 0 && data) {
+        message.success('删除成功');
+        setChartId(0);
+        //列表刷新失效
+        if (actionRef.current) {
+          actionRef.current.reload();
+        }
+      } else {
+        message.error('删除失败');
+      }
+    } catch (e: any) {
+      message.error('删除失败', e.message);
+    }
+  };
 
   return (
     <div className="my-chart-page">
@@ -179,5 +295,9 @@ const MyChartPage: React.FC = () => {
         />
     </div>
   );
+
+
 };
 export default MyChartPage;
+
+git commit --no-verify -m  -- src/app.tsx config/config.ts src/pages/MyChart/components/UpdateChartModal.tsx src/pages/Admin.tsx src/pages/User/settings/components/base.tsx src/pages/Welcome.tsx src/pages/User/Login/index.tsx src/pages/MyChart/index.tsx src/components/Footer/index.tsx config/defaultSettings.ts src/manifest.json package.json
